@@ -1,64 +1,137 @@
 #![allow(non_snake_case)] //for allowing snake case
 #![allow(unused)] //for allowing unused variables or functions
-mod Bengoli;mod English;mod Gujarati;mod Hindi;mod Marathi;
-use std::collections::HashMap;
-use std::i32; //library fir i32
-use std::io; //library for standard input output //library   for Hashmap
-
+mod Bengoli;
+mod English;
+mod Gujarati;
+mod Hindi;
+mod Marathi;
+use std::collections::HashMap; //library for standard input output //library   for Hashmap
+use std::fs::File; //file library
+use std::fs::OpenOptions;
+use std::i32; //library for i32
+use std::io::prelude::*; // for input output file
+use std::io::Write; //write operation in file
+use std::io::{self, BufRead};
+use std::path::Path; //for file path
 fn main() {
     println!("............Currency_To_Text.............");
     println!("Enter 1 for English conversion\nEnter 2 for Marathi conversion\nEnter 3 for Hindi conversion\nEnter 4 for Gujarati conversion\nEnter 5 for Bengoli conversion  ");
-    //let mut loopval=String::new();
-    //io::stdin().read_line(&mut loopval).expect(("Fail to read line"));
-    //let loopvalcopy:i32=loopval.trim().parse().ok().expect("Program can only process numbers");
-
-    let mut Choice = String::new();
+    let mut file = File::create("New.txt"); //Creating new file
+    let mut file1 = OpenOptions::new() //Append open operation on new file
+        .append(true)
+        .open("New.txt")
+        .expect("cannot open file");
+    let mut Choice = String::new(); //Choice for Language
     io::stdin()
         .read_line(&mut Choice)
         .expect("Fail to read Line");
-    println!("Enter your Currency:");
-    let choiceagain: i32 = Choice
-        .trim()
-        .parse()
-        .ok()
-        .expect("program can only process numbers");
-    let mut currency = String::new();
-    let mut Complete_string = " ".to_string();
+    println!("Enter the RowNumber:");
+    let mut row_choice_str = String::new(); //RowNo for conversion
     io::stdin()
-        .read_line(&mut currency)
-        .expect("Fail to read Line");
-    let float_currency: f64 = currency
-        .trim()
-        .parse()
-        .ok()
-        .expect("program can only process numbers");
-    let int_currency = float_currency as u32;
-    let _diff: f64 = float_currency - f64::from(int_currency);
-    let _fn: f64 = _diff * f64::from(100);
-    //finding float value
-    let _int_fn = _fn.round(); //round function
-    let _intval = _int_fn as u32;
-    if _intval != 0 {
-        //decimal Number addition to the string
-        let mut _decimalNo_pow = u32::pow(10, 2);
-        //str2 = [str2,_decimalNo.to_string(),"/".to_string(), _decimalNo_pow.to_string()].join(" ");
-        Complete_string = [
-            _intval.to_string(),
-            "/".to_string(),
-            _decimalNo_pow.to_string(),
-        ]
-        .join(" "); //Decimal number printing
-    }
-    //println!("{}",Complete_string);
-match choiceagain {
-        1 => println!("{}", English::EnglishWords(int_currency, &Complete_string)),
-        2 => println!("{}", Marathi::MarathiWords(int_currency, &Complete_string)),
-        3 => println!("{}", Hindi::HindiWords(int_currency, &Complete_string)),
-        4 => println!("{}",Gujarati::GujaratiWords(int_currency, &Complete_string)),
-        5 => println!("{}", Bengoli::BengoliWords(int_currency, &Complete_string)),
-        _ => println!("Wrong choice:"),
+        .read_line(&mut row_choice_str)
+        .expect("Fail to read line");
+    /*let mut delimiter = String::new();
+    io::stdin()
+        .read_line(&mut delimiter)
+        .expect("delimiter value only");*/
+    if let Ok(lines) = read_lines("file.txt") {
+        //function for Reading slines in file
+        for line in lines {
+            if let Ok(ip) = line {
+                let line: Vec<&str> = ip.split(",").collect(); //slicing of string
+                let choiceagain: i32 = Choice //string to integer converion of  Choice
+                    .trim()
+                    .parse()
+                    .ok()
+                    .expect("program can only process numbers");
+                let mut currency = String::new(); //input currency
+                let mut Complete_string = " ".to_string(); //complete string of Inword
+                                                           /*io::stdin()
+                                                           .read_line(&mut currency)
+                                                           .expect("Fail to read Line");*/
+
+                let row_choice: usize = row_choice_str.trim().parse().ok().expect("only numbers"); //conversion of string to int of row_choice
+                currency = [line[row_choice].to_string()].join(" "); //Actual amount from the file
+                let float_currency: f64 = currency
+                    .trim()
+                    .parse()
+                    .ok()
+                    .expect("program can only process numbers"); //Conversion of string to float of currecny
+                let int_currency = float_currency as u32;
+                let _diff: f64 = float_currency - f64::from(int_currency); //Slicing the amount after decimal point
+                let _fn: f64 = _diff * f64::from(100);
+                let _int_fn = _fn.round(); //round function
+                let _intval = _int_fn as u32;
+                if _intval != 0 {
+                    //decimal Number addition to the string
+                    let mut _decimalNo_pow = u32::pow(10, 2);
+                    //str2 = [str2,_decimalNo.to_string(),"/".to_string(), _decimalNo_pow.to_string()].join(" ");
+                    Complete_string = [
+                        _intval.to_string(),
+                        "/".to_string(),
+                        _decimalNo_pow.to_string(),
+                    ]
+                    .join(" "); //Decimal number printing
+                }
+                //println!("{}",Complete_string);
+                let mut str = String::new();
+                match choiceagain {
+                    //Extracting the word amount from diffrent files
+                    1 => {
+                        str = [
+                            English::EnglishWords(int_currency, &Complete_string), //English
+                            "\n".to_string(),
+                        ]
+                        .join(" ")
+                    }
+                    2 => {
+                        str = [
+                            Marathi::MarathiWords(int_currency, &Complete_string), //Marathi
+                            "\n".to_string(),
+                        ]
+                        .join(" ")
+                    }
+                    3 => {
+                        str = [
+                            Hindi::HindiWords(int_currency, &Complete_string), //Hindi
+                            "\n".to_string(),
+                        ]
+                        .join(" ")
+                    }
+
+                    4 => {
+                        str = [
+                            Gujarati::GujaratiWords(int_currency, &Complete_string), //Gujarati
+                            "\n".to_string(),
+                        ]
+                        .join(" ")
+                    }
+
+                    5 => {
+                        str = [
+                            Bengoli::BengoliWords(int_currency, &Complete_string), //Bengoli
+                            "\n".to_string(),
+                        ]
+                        .join(" ")
+                    }
+
+                    _ => str = ["Wrong choice:".to_string(), "\n".to_string()].join(" "),
+                }
+                file1.write_all(ip.as_bytes()).expect("write failed");
+                file1.write_all(str.as_bytes()).expect("Write failed"); //Appending string to the file
+            }
+        }
     }
 }
+fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
+//Read file line by line
+where
+    P: AsRef<Path>,
+{
+    let file = File::open(filename)?;
+    Ok(io::BufReader::new(file).lines()) //reading file with buffer read
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -246,5 +319,3 @@ mod test {
         )
     }
 }
-
-
