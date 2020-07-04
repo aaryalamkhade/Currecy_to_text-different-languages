@@ -1,5 +1,5 @@
-a,b,c,1234.34  One Thousand Two Hundred Thirty Four 34 / 100 
-a,b,c,4578.24  Four Thousand Five Hundred Seventy Eight 24 / 100 
-a,b,c,1236.45  One Thousand Two Hundred Thirty Six 45 / 100 
-a,b,c,1457.45  One Thousand Four Hundred Fifty Seven 45 / 100 
-a,b,c,4578  Four Thousand Five Hundred Seventy Eight   
+a,b,c,1234.34,   One Thousand Two Hundred Thirty Four 34 / 100 
+a,b,c,4578.24,   Four Thousand Five Hundred Seventy Eight 24 / 100 
+a,b,c,1236.45,   One Thousand Two Hundred Thirty Six 45 / 100 
+a,b,c,1457.45,   One Thousand Four Hundred Fifty Seven 45 / 100 
+a,b,c,4578,   Four Thousand Five Hundred Seventy Eight   

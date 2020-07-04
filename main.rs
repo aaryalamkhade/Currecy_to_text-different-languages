@@ -117,6 +117,7 @@ fn main() {
 
                     _ => str = ["Wrong choice:".to_string(), "\n".to_string()].join(" "),
                 }
+                str = [",".to_string(), str].join(" ");
                 file1.write_all(ip.as_bytes()).expect("write failed");
                 file1.write_all(str.as_bytes()).expect("Write failed"); //Appending string to the file
             }
