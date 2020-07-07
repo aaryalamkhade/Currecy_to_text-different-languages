@@ -13,28 +13,37 @@ use std::io::prelude::*; // for input output file
 use std::io::Write; //write operation in file
 use std::io::{self, BufRead};
 use std::path::Path; //for file path
+
 fn main() {
     println!("............Currency_To_Text.............");
     println!("Enter 1 for English conversion\nEnter 2 for Marathi conversion\nEnter 3 for Hindi conversion\nEnter 4 for Gujarati conversion\nEnter 5 for Bengoli conversion  ");
-    let mut file = File::create("New.txt"); //Creating new file
-    let mut file1 = OpenOptions::new() //Append open operation on new file
-        .append(true)
-        .open("New.txt")
-        .expect("cannot open file");
     let mut Choice = String::new(); //Choice for Language
     io::stdin()
         .read_line(&mut Choice)
         .expect("Fail to read Line");
-    println!("Enter the RowNumber:");
-    let mut row_choice_str = String::new(); //RowNo for conversion
+    println!("Enter column number which you want to convert:");
+    let mut column_choice_str = String::new(); //RowNo for conversion
     io::stdin()
-        .read_line(&mut row_choice_str)
+        .read_line(&mut column_choice_str)
         .expect("Fail to read line");
     /*let mut delimiter = String::new();
     io::stdin()
         .read_line(&mut delimiter)
         .expect("delimiter value only");*/
-    if let Ok(lines) = read_lines("file.txt") {
+    //println!("{:?}",file1);
+    fileread(Choice, column_choice_str);
+    outputfileread();
+}
+
+fn fileread(Choice: String, column_choice_str: String) -> String {
+    let mut file = File::create("Output.txt"); //Creating new file
+    let mut file1 = OpenOptions::new() //Append open operation on new file
+        .append(true)
+        .open("Output.txt")
+        .expect("cannot open file");
+    let mut str = String::new();
+    let mut str1 = String::new();
+    if let Ok(lines) = read_lines("Input.txt") {
         //function for Reading slines in file
         for line in lines {
             if let Ok(ip) = line {
@@ -50,8 +59,9 @@ fn main() {
                                                            .read_line(&mut currency)
                                                            .expect("Fail to read Line");*/
 
-                let row_choice: usize = row_choice_str.trim().parse().ok().expect("only numbers"); //conversion of string to int of row_choice
-                currency = [line[row_choice].to_string()].join(" "); //Actual amount from the file
+                let Column_choice: usize =
+                    column_choice_str.trim().parse().ok().expect("only numbers"); //conversion of string to int of row_choice
+                currency = [line[Column_choice].to_string()].join(" "); //Actual amount from the file
                 let float_currency: f64 = currency
                     .trim()
                     .parse()
@@ -74,7 +84,6 @@ fn main() {
                     .join(" "); //Decimal number printing
                 }
                 //println!("{}",Complete_string);
-                let mut str = String::new();
                 match choiceagain {
                     //Extracting the word amount from diffrent files
                     1 => {
@@ -117,13 +126,34 @@ fn main() {
 
                     _ => str = ["Wrong choice:".to_string(), "\n".to_string()].join(" "),
                 }
-                str = [",".to_string(), str].join(" ");
+                str = [",".to_string(), "INR".to_string(), str].join("");
                 file1.write_all(ip.as_bytes()).expect("write failed");
                 file1.write_all(str.as_bytes()).expect("Write failed"); //Appending string to the file
+                str1 = [str1, ip.to_string(), str].join("");
+                //str1=[str1].join(" ");
+            }
+        }
+        println!("Output is in the output.txt");
+    }
+    return str1;
+}
+use std::fs;
+fn outputfileread() -> String {
+    let mut contents = String::new();
+    //contents="".to_string();
+    if let Ok(lines) = read_lines("Output.txt") {
+        // Consumes the iterator, returns an (Optional) String
+        for line in lines {
+            if let Ok(ip) = line {
+                let mut new = ip;
+                contents = ["".to_string(), contents, new, "\n".to_string()].join("");
             }
         }
     }
+    //print!("{}",contents);
+    return contents;
 }
+
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
 //Read file line by line
 where
@@ -136,6 +166,13 @@ where
 #[cfg(test)]
 mod test {
     use super::*;
+    #[test]
+    fn testfile() {
+        assert_eq!(fileread(1.to_string(), 2.to_string()), outputfileread())
+    }
+    fn testfile1() {
+        assert_eq!(fileread(2.to_string(), 2.to_string()), outputfileread())
+    }
     #[test]
     fn test1() {
         assert_eq!(English::EnglishWords(1, " "), "  One  ")
@@ -319,4 +356,6 @@ mod test {
             "  দশ  কোটি  দুই  29 / 100"
         )
     }
+    #[test]
+    fn test31() {}
 }
